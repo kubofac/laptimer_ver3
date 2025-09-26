@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, user-scalable=no">
+
+
+
+<link rel="manifest" href="/manifest.json">
+
+
+
+
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/service-worker.js')
+      .then(registration => {
+        console.log('Service Worker registered! Scope:', registration.scope);
+      })
+      .catch(err => {
+        console.log('Service Worker registration failed:', err);
+      });
+  });
+}
+</script>
+
+
+
+
+
+
+    <title>Dorrobor_ver2_クボファク</title>
+</head>
+<style>
+    /* 元のコードのCSSスタイルを維持し、レイアウトを調整 */
+    html { touch-action: manipulation; -webkit-touch-callout: none; }
+    #body { min-height: 100vh;}
+    #container {
+        position: relative;
+        margin-top:0px;
+        background:white;
+        width: 720px;
+        height: 360px;
+    }
+    #canvas{ margin-top:10px; margin-left:0px; position: absolute; z-index: 2; }
+    #main_img { margin-top:30px; margin-left:20px; position: absolute; z-index:1; }
+    #main_imgg { margin-top:30px; margin-left:20px; position: absolute; z-index: 3; }
+    .button1{ border-width: 1px; border-color: #e6e6e6; border-style: solid; background-color: #fff; padding: 5px 20px 5px 20px; color: #4d4d4d; font-size: 14px; font-weight: 300; margin:20px 0px 0px 630px; position: absolute; z-index: 5; }
+    .button2{ border-width: 1px; border-color: #e6e6e6; border-style: solid; background-color: #fff; padding: 5px 20px 5px 20px; color: #4d4d4d; font-size: 14px; font-weight: 300; margin:60px 0px 0px 630px; position: absolute; z-index: 4; }
+    .button3{ border-width: 1px; border-color: #e6e6e6; border-style: solid; background-color: #fff; padding: 5px 20px 5px 20px; color: #4d4d4d; font-size: 14px; font-weight: 300; margin:100px 0px 0px 630px; position: absolute; z-index: 9; }
+    .button4{ border-width: 1px; border-color: #e6e6e6; border-style: solid; background-color: #fff; padding: 5px 20px 5px 20px; color: #4d4d4d; font-size: 14px; font-weight: 300; margin:140px 0px 0px 630px; position: absolute; z-index: 10; }
+    .button5{ border-width: 1px; border-color: #e6e6e6; border-style: solid; background-color: #fff; padding: 5px 20px 5px 20px; color: #4d4d4d; font-size: 14px; font-weight: 300; margin:180px 0px 0px 630px; position: absolute; z-index: 14; }
+    .button6{ border-width: 1px; border-color: #e6e6e6; border-style: solid; background-color: #fff; padding: 5px 20px 5px 20px; color: #4d4d4d; font-size: 14px; font-weight: 300; margin:220px 0px 0px 630px; position: absolute; z-index: 15; }
+    .button1:hover{background-color: #dcdcdc;} .button1:active{background-color: #77DD77;}
+    .button2:hover{background-color: #dcdcdc;} .button2:active{background-color: #ff0000;}
+    .button3:hover{background-color: #dcdcdc;} .button3:active{background-color: #77DD77;}
+    .button4:hover{background-color: #dcdcdc;} .button4:active{background-color: #ff0000;}
+    .button5:hover{background-color: #dcdcdc;} .button5:active{background-color: #77DD77;}
+    .button6:hover{background-color: #dcdcdc;} .button6:active{background-color: #ff0000;}
+    div#debugInfo{ position: absolute; z-index: 30; opacity: 0;}
+    .data_text{ margin:100px 0px 0px 530px; position: absolute; z-index: 6; }
+    diiv#device_name { margin:0px 0px 0px 0px; position: absolute; z-index: 19; }
+    .datatext2{ color: #000000; font-size: 40px; font-weight: bold; font-family:"Arial"; margin:290px 0px 0px 500px; position: absolute; z-index: 8; width: 170px; text-align:right; }
+    div#display1 { color: #000000; font-size: 70px; font-weight: bold; font-family:"Arial"; margin:0px 0px 0px 300px; position: absolute; z-index: 11; }
+    div#display { color: #000000; font-size: 40px; font-weight: bold; font-family:"Arial"; margin:80px 0px 0px 310px; position: absolute; z-index: 12; }
+    div#lap { font-family:"Arial"; position: relative; text-align: center; font-size: 30px; height: 300px; overflow-y: scroll; width: 100%; min-height: 200px; margin-top: 60px; margin-bottom: 10px; left: 0px; }
+    div#mask { width: 300px; height: 200px; overflow: hidden; margin:70px 0px 0px 260px; position: absolute; z-index: 13; }
+    div#lap>div { font-size: 4vw; }
+    div#jikan1{ margin:300px 0px 0px 0px; position: absolute; z-index:16; }
+    div#speed1 { color: #000000; font-size: 30px; font-weight: bold; font-family:"Arial"; margin:290px 0px 0px 270px; position: absolute; z-index: 17; text-align:left; }
+    div#test{ margin:20px 0px 0px 0px; position: absolute; z-index: 18; }
+</style>
+
+<body bgcolor="#ffffff" text="#000000">
+<div id="container">
+    <canvas id="canvas"></canvas>
+    <img id="main_img" src="22.gif"></img>
+    <img id="main_imgg" src="33.svg"></img>
+    <div id="data_text1" class="datatext1"> </div>
+    <div id="data_text2" class="datatext2"> </div>
+    <div id="device_name"> </div>
+    <div id='speed1'></div>
+    <div id='jikan1'></div>
+    <button id="bluetoothConnectBtn" class="button1">Start</button>
+    <button id="bluetoothDisconnectBtn" class="button2">Stop</button>
+    <button id="start" class="button3">start</button>
+    <button id="reset" class="button4">reset</button>
+    <button id="gpsButton" class="button5">GPS</button>
+    <input type="button" onclick="displayDate()" class="button6" value="GET">
+    <div id='display1'>00:00.000</div>
+    <div id='display'>00:00.000</div>
+    <div id="test"></div>
+    <div id="debugInfo"></div>
+    <div id="bluetoothReceiveText" style="display:none;"></div>
+    <div id='mask'>
+        <div id='lap'>
+        </div>
+    </div>
+</div>
+<script>
+'use strict';
+// --- グローバル変数 ---
+const storageName = 'stopWatch_status';
+const elem = {};
+const SW_STATE = { STOP: 0, RUN: 1, PAUSE: 2 };
+let swState = SW_STATE.STOP;
+
+let startTime = 0;
+let lapRecords = [];
+let lapCount = 0;
+let countUpTimerId;
+let lapTimerId;
+let lapStartTime = 0;
+let port;
+let reader;
+let lapFixedDisplayTimeoutId;
+
+// --- Web Bluetooth API関連のグローバル変数 ---
+let bleDevice;
+let pulseCharacteristic, tempCharacteristic, switchCharacteristic;
+let lastSwitchState = 0;
+const switchDebounceDelay = 100;
+let lastSwitchChangeTime = 0;
+let pulseTimeoutId; // パルス途絶を検知するためのタイマーID
+const PULSE_TIMEOUT_MS = 500; // パルスが途絶えたと判定する時間（ミリ秒）
+
+// --- GPS関連のグローバル変数 ---
+let connectedDeviceName;
+let idd, keii, iddd, keiii, hido, hkeii, pl, cir;
+let gpsThresholdValue = 20;
+let watch_id = null;
+let isGpsRunning = false;
+
+// GPS通過判定ロジック用変数
+let lastPosition = null;
+let previousSideOfLine = null;
+let lapCoolDown = 15000;
+let lastLapTime = 0;
+
+// BluetoothサービスとキャラクタリスティックのUUID
+const SERVICE_UUID = "4fafc201-1fb5-459e-8fcc-c5c9c331914b";
+const PULSE_CHARACTERISTIC_UUID = "f4deb353-a4cf-4ffb-badb-2a5f2e3bb630";
+const TEMP_CHARACTERISTIC_UUID = "ac98b174-608a-41f2-aa83-7e55432fafa9";
+const SWITCH_CHARACTERISTIC_UUID = "8525def0-be79-4ae3-820f-65a0a6079cdf";
+const debugInfo = document.getElementById('debugInfo');
+const gpsButton = document.getElementById('gpsButton');
+
+// --- Web Bluetooth APIによる通信関数 ---
+const bluetoothConnect = async () => {
+    try {
+        debugInfo.textContent = 'BLEデバイスをスキャンしています...';
+        bleDevice = await navigator.bluetooth.requestDevice({
+            filters: [{ services: [SERVICE_UUID] }]
+        });
+        debugInfo.textContent = '接続中...';
+        const server = await bleDevice.gatt.connect();
+        debugInfo.textContent = 'サービスとキャラクタリスティックを取得中...';
+        const service = await server.getPrimaryService(SERVICE_UUID);
+        pulseCharacteristic = await service.getCharacteristic(PULSE_CHARACTERISTIC_UUID);
+        tempCharacteristic = await service.getCharacteristic(TEMP_CHARACTERISTIC_UUID);
+        switchCharacteristic = await service.getCharacteristic(SWITCH_CHARACTERISTIC_UUID);
+        pulseCharacteristic.addEventListener('characteristicvaluechanged', handlePulseChanged);
+        await pulseCharacteristic.startNotifications();
+        tempCharacteristic.addEventListener('characteristicvaluechanged', handleTempChanged);
+        await tempCharacteristic.startNotifications();
+        switchCharacteristic.addEventListener('characteristicvaluechanged', handleSwitchChanged);
+        await switchCharacteristic.startNotifications();
+        debugInfo.textContent = '● 接続完了';
+        console.log('接続完了。データ受信を開始します。');
+        
+        // 接続成功時にタコメーターを初期化
+        drawTachometer(0);
+        
+    } catch (error) {
+        console.error("BLE接続エラー:", error);
+        debugInfo.innerHTML = `接続エラー: ${error.message}`;
+    }
+};
+
+const bluetoothDisconnect = async () => {
+    if (bleDevice && bleDevice.gatt.connected) {
+        try {
+            await pulseCharacteristic.stopNotifications();
+            pulseCharacteristic.removeEventListener('characteristicvaluechanged', handlePulseChanged);
+            await tempCharacteristic.stopNotifications();
+            tempCharacteristic.removeEventListener('characteristicvaluechanged', handleTempChanged);
+            await switchCharacteristic.stopNotifications();
+            switchCharacteristic.removeEventListener('characteristicvaluechanged', handleSwitchChanged);
+            await bleDevice.gatt.disconnect();
+            debugInfo.textContent = 'disconnect';
+            console.log('BLE切断完了。');
+            
+            // 切断時にタコメーターを0に戻す
+            drawTachometer(0);
+            
+        } catch (error) {
+            console.error("切断エラー:", error);
+            debugInfo.innerHTML = `error: ${error.message}`;
+        }
+    } else {
+        debugInfo.textContent = 'notconnect';
+    }
+};
+
+// タコメーターを描画する関数を分離
+function drawTachometer(rpm) {
+    const canvas = document.getElementById('canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    canvas.height = window.innerHeight;
+    canvas.width = window.innerWidth;
+    const sizea = 340;
+    const sizeb = 340;
+    const anglea = rpm * 0.016;
+    const endAngle = anglea * Math.PI / 180;
+    const s1 = String(Math.round(rpm));
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "#000000";
+    ctx.font = "bold 45px Arial";
+    ctx.textAlign = "center";
+    ctx.fillText(s1, 235, 240);
+    ctx.translate(sizea / 2, sizeb / 2);
+    ctx.rotate(endAngle);
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.lineTo(0, sizeb / 2 - 60);
+    ctx.strokeStyle = "#ff0000";
+    ctx.lineWidth = 5;
+    ctx.stroke();
+}
+
+function handlePulseChanged(event) {
+    // パルスが来たら、既存のタイマーをリセット
+    clearTimeout(pulseTimeoutId);
+
+    const value = event.target.value;
+    const fqv = value.getUint16(0, true);
+    
+    // plが0または未定義の場合は計算をスキップし、RPMを0とする
+    const rev = (pl && pl !== 0) ? (fqv * 60 / pl) : 0;
+    let rpm = ((rev / 10) * 10);
+    if (rpm > 15000) { rpm = 0; }
+    
+    drawTachometer(rpm);
+
+    // 一定時間パルスが来なければ0に戻すタイマーを設定
+    pulseTimeoutId = setTimeout(() => {
+        drawTachometer(0);
+    }, PULSE_TIMEOUT_MS);
+}
+
+function handleTempChanged(event) {
+    const value = event.target.value;
+    const tempv = value.getUint8(0);
+    document.getElementById('data_text2').innerHTML = `${tempv} ℃`;
+}
+
+function handleSwitchChanged(event) {
+    const value = event.target.value;
+    const rawSwitchState = value.getUint8(0);
+    const currentTime = Date.now();
+    if (rawSwitchState === 1) {
+        if (rawSwitchState !== lastSwitchState || (currentTime - lastSwitchChangeTime >= switchDebounceDelay)) {
+            clickLapResetSW();
+            lastSwitchState = rawSwitchState;
+            lastSwitchChangeTime = currentTime;
+        }
+    } else {
+        lastSwitchState = rawSwitchState;
+    }
+}
+
+// --- ストップウォッチ関連の関数 ---
+const timePrint = (time) => {
+    let m = Math.floor(time / 60000); let s = Math.floor(time % 60000 / 1000); let ms = Math.floor(time % 1000); m = ('0' + m).slice(-2); s = ('0' + s).slice(-2); ms = ('00' + ms).slice(-3);
+    if (elem.display) elem.display.textContent = `${m}:${s}.${ms}`;
+};
+const getStorage = () => { try { return JSON.parse(localStorage.getItem(storageName)) || {}; } catch (e) { return {}; } };
+const setStorage = () => {
+    const storage = { startTime: startTime, lapRecords: lapRecords, lapDisplay: elem.display1 ? elem.display1.textContent : '00:00.000', lapCount: lapCount, lastLapTime: lastLapTime, lapStartTime: lapStartTime };
+    localStorage.setItem(storageName, JSON.stringify(storage));
+};
+const clearStorage = () => { localStorage.removeItem(storageName); };
+
+const countUp = () => {
+    countUpTimerId = requestAnimationFrame(() => {
+        if (startTime === 0) startTime = Date.now();
+        const now = Date.now();
+        timePrint(now - startTime);
+        countUp();
+        setStorage();
+    });
+};
+
+const startRealtimeLap = () => {
+    if (swState === SW_STATE.RUN) {
+        lapTimerId = requestAnimationFrame(() => {
+            const now = Date.now();
+            const lapDisplay = timeToString(now - lapStartTime);
+            if (elem.display1) elem.display1.textContent = lapDisplay;
+            startRealtimeLap();
+            localStorage.setItem('lapDisplay', lapDisplay);
+        });
+    }
+};
+
+const timeToString = (time) => {
+    let m = Math.floor(time / 60000); let s = Math.floor(time % 60000 / 1000); let ms = Math.floor(time % 1000); m = ('0' + m).slice(-2); s = ('0' + s).slice(-2); ms = ('00' + ms).slice(-3); return `${m}:${s}.${ms}`;
+};
+const timeToStringNoMs = (time) => {
+    let m = Math.floor(time / 60000); let s = Math.floor(time % 60000 / 1000); m = ('0' + m).slice(-2); s = ('0' + s).slice(-2); return `${m}:${s}`;
+};
+
+const timeFormatLap = (time) => {
+    const totalMinutes = Math.floor(time / 60000);
+    const totalSeconds = Math.floor((time % 60000) / 1000);
+    const milliseconds = time % 1000;
+    return `${('0' + totalMinutes).slice(-2)}:${('0' + totalSeconds).slice(-2)}.${('00' + milliseconds).slice(-3)}`;
+};
+
+const lapTimePrint = (time, type = 'manual') => {
+    const lapDuration = timeFormatLap(time);
+    const lapDiv = document.createElement('div');
+    lapDiv.textContent = `[${lapCount}] ${lapDuration}`;
+    if (elem.lap) {
+        elem.lap.insertBefore(lapDiv, elem.lap.firstChild);
+    }
+    lapRecords.push({ count: lapCount, time: lapDuration });
+    setStorage();
+};
+
+const clickStartSW = () => {
+    const startButton = document.getElementById('start'); const resetButton = document.getElementById('reset');
+    if (swState === SW_STATE.STOP) {
+        swState = SW_STATE.RUN; startTime = 0;
+        lastLapTime = Date.now();
+        lapStartTime = Date.now();
+        lapCount = 0;
+        countUp();
+        startRealtimeLap();
+        if (startButton) startButton.textContent = 'stop'; if (resetButton) resetButton.textContent = 'lap';
+        if (!isGpsRunning) {
+            startGps();
+        }
+    } else if (swState === SW_STATE.RUN) {
+        swState = SW_STATE.PAUSE;
+        cancelAnimationFrame(countUpTimerId);
+        cancelAnimationFrame(lapTimerId);
+        clearTimeout(lapFixedDisplayTimeoutId);
+        startTime = -(Date.now() - startTime); if (startButton) startButton.textContent = 'start'; if (resetButton) resetButton.textContent = 'reset'; setStorage();
+    } else if (swState === SW_STATE.PAUSE) {
+        swState = SW_STATE.RUN; startTime = Date.now() + startTime; lapStartTime = Date.now();
+        countUp();
+        startRealtimeLap();
+        if (startButton) startButton.textContent = 'stop'; if (resetButton) resetButton.textContent = 'lap';
+        if (!isGpsRunning) {
+            startGps();
+        }
+    }
+};
+const clickLapResetSW = () => {
+    const startButton = document.getElementById('start');
+    const resetButton = document.getElementById('reset');
+
+    if (swState === SW_STATE.RUN) {
+        lapCount++;
+        const now = Date.now();
+        const lapDuration = now - lapStartTime;
+
+        lapTimePrint(lapDuration);
+        lastLapTime = now;
+        lapStartTime = now;
+        cancelAnimationFrame(lapTimerId);
+        startRealtimeLap();
+
+    } else if (swState === SW_STATE.PAUSE) {
+        swState = SW_STATE.STOP; startTime = 0; lapRecords = []; lapCount = 0;
+        cancelAnimationFrame(countUpTimerId);
+        cancelAnimationFrame(lapTimerId);
+        clearTimeout(lapFixedDisplayTimeoutId);
+        timePrint(0);
+        if (elem.lap) elem.lap.innerHTML = ''; if (elem.display1) elem.display1.textContent = '00:00.000';
+        if (startButton) startButton.textContent = 'start'; if (resetButton) resetButton.textContent = 'reset';
+        
+        localStorage.removeItem(storageName);
+        
+        stopGps();
+        lastPosition = null;
+        previousSideOfLine = null;
+        lastLapTime = 0;
+    }
+};
+
+// --- GPS関連の関数 ---
+function startGps() {
+    if (!isGpsRunning) {
+        watch_id = navigator.geolocation.watchPosition(test2, function(e) { console.error("GPS error:", e.message); }, { "enableHighAccuracy": true, "timeout": 20000, "maximumAge": 0 });
+        isGpsRunning = true;
+        console.log('GPS監視開始。');
+        document.getElementById("debugInfo").innerHTML = "GPS監視を開始しました...";
+    }
+}
+
+function stopGps() {
+    if (isGpsRunning && watch_id !== null) {
+        navigator.geolocation.clearWatch(watch_id);
+        watch_id = null;
+        isGpsRunning = false;
+        console.log('GPS監視停止。');
+        document.getElementById("debugInfo").innerHTML = "GPS監視を停止しました。";
+    }
+}
+
+function displayDate() {
+    console.log("ローカルストレージに保存されているデータ:");
+    for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i); const value = localStorage.getItem(key);
+        console.log(`キー: ${key}, 値: ${value}`);
+        if (key === 'startLineP1Lat') { idd = Number(value); } else if (key === 'startLineP1Lon') { keii = Number(value); } else if (key === 'startLineP2Lat') { iddd = Number(value); } else if (key === 'startLineP2Lon') { keiii = Number(value); } else if (key === 'pl1') { pl = Number(value); } else if (key === 'cir1') { cir = value; } else if (key === 'hido1') { hido = Number(value); } else if (key === 'hkeii1') { hkeii = Number(value); } else if (key === 'gpsThreshold') { gpsThresholdValue = Number(value); }
+        else if (key === 'lapCoolDownTime') { lapCoolDown = Number(value); }
+    }
+    console.log("変数に代入された値 - idd:", idd, "keii:", keii, "iddd:", iddd, "keiii:", keiii, "hido:", hido, "hkeii:", hkeii, "pl:", pl, "cir:", cir, "gpsThresholdValue:", gpsThresholdValue, "lapCoolDown:", lapCoolDown);
+}
+
+function calculateDistance(lat1, lon1, lat2, lon2) {
+    const R = 6371e3; const φ1 = lat1 * Math.PI / 180; const φ2 = lat2 * Math.PI / 180; const Δφ = (lat2 - lat1) * Math.PI / 180; const Δλ = (lon2 - lon1) * Math.PI / 180;
+    const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) + Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const d = R * c; return d;
+}
+
+function calculatePerpendicularFootApprox(lineLat1, lineLon1, lineLat2, lineLon2, pointLat, pointLon) {
+    const dx = lineLon2 - lineLon1;
+    const dy = lineLat2 - lineLat1;
+    const lineLenSq = dx * dx + dy * dy;
+
+    if (lineLenSq < 1e-9) {
+        return { latitude: lineLat1, longitude: lineLon1 };
+    }
+
+    const t = ((pointLon - lineLon1) * dx + (pointLat - lineLat1) * dy) / lineLenSq;
+
+    if (t < 0) {
+        return { latitude: lineLat1, longitude: lineLon1 };
+    } else if (t > 1) {
+        return { latitude: lineLat2, longitude: lineLon2 };
+    }
+
+    return {
+        latitude: lineLat1 + t * dy,
+        longitude: lineLon1 + t * dx
+    };
+}
+
+function getSideOfLine(pointLat, pointLon, lineLat1, lineLon1, lineLat2, lineLon2) {
+    const dx = lineLon2 - lineLon1;
+    const dy = lineLat2 - lineLat1;
+    const x = pointLon - lineLon1;
+    const y = pointLat - lineLat1;
+    return (dx * y) - (dy * x);
+}
+
+// 変更: 緯度・経度・時刻の3つの情報を持つオブジェクトを引数として受け取る
+function getIntersectionTime(p1, p2, l1, l2, l3, l4) {
+    const A = (l4 - l2) * (p2.longitude - p1.longitude) - (l3 - l1) * (p2.latitude - p1.latitude);
+    if (A === 0) return null;
+    const B = (l3 - l1) * (p1.latitude - l2) - (l4 - l2) * (p1.longitude - l1);
+    const ratio = B / A;
+    // 0から1の範囲で交点があるかチェック
+    if (ratio < 0 || ratio > 1) return null;
+    return p1.time + (p2.time - p1.time) * ratio;
+}
+function test2(position) {
+    if (!position || !position.coords) {
+        document.getElementById("debugInfo").innerHTML = "GPS信号を探索中です...";
+        return;
+    }
+
+    if (typeof idd === 'undefined' || typeof keii === 'undefined') {
+        document.getElementById("debugInfo").innerHTML = "スタートラインの座標が未設定です。<br>GETボタンを押して設定を読み込んでください。";
+        return;
+    }
+
+    if (swState !== SW_STATE.RUN) {
+        return;
+    }
+
+    let speed = Math.round(position.coords.speed * 3600 / 1000); const date = new Date(position.timestamp); const jikan = date.toLocaleString();
+    document.getElementById('speed1').innerHTML = `${speed} km/h`; document.getElementById('jikan1').innerHTML = jikan;
+    const currentLat = position.coords.latitude; const currentLon = position.coords.longitude; const currentTime = Date.now();
+    const P = calculatePerpendicularFootApprox(idd, keii, iddd, keiii, currentLat, currentLon);
+    const distanceToStartLine = calculateDistance(currentLat, currentLon, P.latitude, P.longitude);
+    const threshold = gpsThresholdValue;
+    const isNearStartLine = distanceToStartLine <= threshold;
+
+    // 変更: lastPositionに速度と時刻情報を追加
+    if (!lastPosition) {
+        lastPosition = { latitude: currentLat, longitude: currentLon, time: currentTime, speed: position.coords.speed };
+        previousSideOfLine = getSideOfLine(currentLat, currentLon, idd, keii, iddd, keiii);
+        return;
+    }
+
+    const currentSideOfLine = getSideOfLine(currentLat, currentLon, idd, keii, iddd, keiii);
+    const isCrossingLine = (previousSideOfLine > 0 && currentSideOfLine < 0) || (previousSideOfLine < 0 && currentSideOfLine > 0);
+
+    const timeSinceLastLap = currentTime - lastLapTime;
+    const isCoolDownOver = (lapCount === 0) || (timeSinceLastLap >= lapCoolDown);
+
+    if (isCrossingLine && isCoolDownOver && isNearStartLine) {
+        // 変更: 速度を考慮した未来の予測点を計算
+        const timeDelta = currentTime - lastPosition.time;
+        const speedMs = position.coords.speed || 0; // m/s単位の速度
+        const distanceMoved = speedMs * timeDelta;
+        
+        const deltaLat = currentLat - lastPosition.latitude;
+        const deltaLon = currentLon - lastPosition.longitude;
+        const currentToLastDistance = calculateDistance(currentLat, currentLon, lastPosition.latitude, lastPosition.longitude);
+
+        let predictedLat, predictedLon;
+        if (currentToLastDistance > 0) {
+            const ratio = distanceMoved / currentToLastDistance;
+            predictedLat = currentLat + deltaLat * ratio;
+            predictedLon = currentLon + deltaLon * ratio;
+        } else {
+            predictedLat = currentLat;
+            predictedLon = currentLon;
+        }
+
+        const predictedPosition = {
+            latitude: predictedLat,
+            longitude: predictedLon,
+            time: currentTime + timeDelta
+        };
+        
+        const estimatedCrossingTime = getIntersectionTime(lastPosition, predictedPosition, idd, keii, iddd, keiii);
+        
+        let lapTimeBase;
+
+        if (estimatedCrossingTime && (Math.abs(estimatedCrossingTime - currentTime) < 10000)) { 
+            lapTimeBase = estimatedCrossingTime;
+            console.log("予測時間を使用");
+        } else {
+            lapTimeBase = currentTime;
+            console.log("予測時間が異常なため、現在時刻を使用");
+        }
+
+        lapCount++;
+        const lapDuration = lapTimeBase - lastLapTime;
+        lapTimePrint(lapDuration, 'gps');
+        
+        cancelAnimationFrame(lapTimerId);
+        if (lapFixedDisplayTimeoutId) {
+            clearTimeout(lapFixedDisplayTimeoutId);
+        }
+        if (elem.display1) {
+            elem.display1.textContent = timeToString(lapDuration);
+        }
+
+        lapFixedDisplayTimeoutId = setTimeout(() => {
+            if (swState === SW_STATE.RUN) {
+                lapStartTime = lapTimeBase;
+                startRealtimeLap();
+            }
+        }, 10000);
+        
+        lastLapTime = lapTimeBase;
+        console.log(`ラップ ${lapCount} をトリガーしました！推定通過時刻: ${new Date(lapTimeBase).toISOString()}`);
+    }
+
+    // 変更: lastPositionを更新
+    lastPosition = { latitude: currentLat, longitude: currentLon, time: currentTime, speed: position.coords.speed };
+    previousSideOfLine = currentSideOfLine;
+
+    const logText = `P1: ${idd.toFixed(6)}, ${keii.toFixed(6)}<br>P2: ${iddd.toFixed(6)}, ${keiii.toFixed(6)}<br>現在位置: ${currentLat.toFixed(6)}, ${currentLon.toFixed(6)}<br>速度: ${position.coords.speed || 0} m/s<br>距離: ${distanceToStartLine.toFixed(2)} m<br>閾値: ${threshold} m<br>前回からの経過時間: ${(timeSinceLastLap / 1000).toFixed(2)}秒<br>ラップクールダウン時間: ${lapCoolDown / 1000}秒<br>クールダウン経過: ${isCoolDownOver}<br>ライン通過: ${isCrossingLine}<br>閾値内: ${isNearStartLine}<br>周回数: ${lapCount}`;
+    document.getElementById("debugInfo").innerHTML = logText;
+}
+
+// --- 実行コード ---
+window.addEventListener('DOMContentLoaded', function () {
+    const startButton = document.getElementById('start');
+    const resetButton = document.getElementById('reset');
+    const bluetoothConnectBtn = document.getElementById('bluetoothConnectBtn');
+    const bluetoothDisconnectBtn = document.getElementById('bluetoothDisconnectBtn');
+    const gpsButton = document.getElementById('gpsButton');
+    const getDateBtn = document.querySelector('.button6');
+
+    elem.display = document.getElementById('display');
+    elem.lap = document.getElementById('lap');
+    elem.display1 = document.getElementById('display1');
+    elem.deviceName = document.getElementById('device_name');
+
+    const e = window.ontouchstart !== undefined ? 'touchstart' : 'mousedown';
+
+    if (startButton) startButton.addEventListener(e, clickStartSW);
+    if (resetButton) resetButton.addEventListener(e, clickLapResetSW);
+    if (bluetoothConnectBtn) bluetoothConnectBtn.addEventListener(e, bluetoothConnect);
+    if (bluetoothDisconnectBtn) bluetoothDisconnectBtn.addEventListener(e, bluetoothDisconnect);
+    if (gpsButton) gpsButton.addEventListener(e, startGps);
+    if (getDateBtn) getDateBtn.addEventListener(e, displayDate);
+
+    timePrint(0);
+    if (elem.display1) elem.display1.textContent = '00:00.000';
+    
+    // 初期表示でタコメーターを0に設定
+    drawTachometer(0);
+
+    const storage = getStorage();
+    if (Object.keys(storage).length > 0) {
+        startTime = storage.startTime; lapRecords = storage.lapRecords || [];
+        if (startTime > 0) {
+            swState = SW_STATE.PAUSE;
+            timePrint(Date.now() + startTime);
+            if (startButton) startButton.textContent = 'start';
+            if (resetButton) resetButton.textContent = 'reset';
+        }
+        if (elem.display1) elem.display1.textContent = storage.lapDisplay;
+        lapCount = storage.lapCount || 0;
+        lastLapTime = storage.lastLapTime || 0;
+        lapStartTime = storage.lapStartTime || 0;
+        if (elem.lap && lapRecords.length > 0) {
+            lapRecords.forEach(record => {
+                const lapDiv = document.createElement('div');
+                lapDiv.textContent = `[${record.count}] ${record.time}`;
+                elem.lap.insertBefore(lapDiv, elem.lap.firstChild);
+            });
+        }
+    }
+});
+</script>
+</body>
+</html>
